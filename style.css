@@ -6,10 +6,25 @@ body {
 }
 
 .field {
-	width: 300px;
+	width: 330px;
     height: 600px;
-    background-color: #006699;
+    background-color: #003366;
 	margin: auto;
 	position: absolute;
 	top: 0; left: 0; bottom: 0; right: 0;
+}
+
+.figure {
+	position: absolute;
+}
+
+.brick {
+	width: 30px;
+    height: 30px;
+	position: absolute;
+    background-color: #990033;
+	border: 1px #ff5050 solid;
+	box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
