@@ -6,8 +6,6 @@ body {
 }
 
 .field {
-	width: 330px;
-    height: 600px;
     background-color: #003366;
 	margin: auto;
 	position: absolute;
