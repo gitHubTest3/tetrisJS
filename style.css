@@ -1,15 +1,25 @@
+html {
+    height: 100%;
+}
+
 body {
 	font-family: 'century gothic', arial, sans-serif;
 	text-align: center;
-	background-color: #000;
 	color: #fff;
+	background-image: radial-gradient(circle at top left, #686a72, #000);
 }
 
-.field {
-    background-color: #003366;
+main {
 	margin: auto;
 	position: absolute;
 	top: 0; left: 0; bottom: 0; right: 0;
+}
+
+.field {
+    background-image: url("images/bg.png");
+	background-size: 30px 30px;
+	background-repeat: repeat;
+	outline: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .figure {
@@ -20,9 +30,39 @@ body {
 	width: 30px;
     height: 30px;
 	position: absolute;
-    background-color: #990033;
-	border: 1px #ff5050 solid;
-	box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
+    background-color: #fff;
+	background-size: contain;
+}
+
+.buttons {
+	display: inline-block;
+	margin-top: 10px;
+}
+
+.button {
+	width: 70px;
+    height: 70px;
+	background-size: contain;
+	float: left;
+	cursor: pointer;
+}
+
+#arrowL {
+	background-image: url("images/arrowL.png");
+}
+
+#arrowR {
+	background-image: url("images/arrowR.png");
+}
+
+#arrowD {
+	background-image: url("images/arrowD.png");
+}
+
+#rotate {
+	background-image: url("images/rotate.png");
+}
+
+#pause {
+	background-image: url("images/pause.png");
 }
