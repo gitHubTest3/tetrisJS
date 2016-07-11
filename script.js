@@ -1,66 +1,90 @@
 $(document).ready(function() {
-	points = 0;
-	prevColor = 0;
-	field = new Field(11, 20);
-	figure = new Figure(Math.floor((Math.random() * 7) + 1));
-	field.figureLowering(true);
+	$('#startGameScreen').fadeIn(1000);
+	$("#start").mousedown(function() {
+		startGame();
+	});
 	
 	$("#arrowL").mousedown(function() {
-		if(!figure.checkCollisions(-1, 0) && field.figureIsBeingLowered)
-			figure.move(-1, 0);
+		$(document).trigger(jQuery.Event('keydown', {keyCode: 37, which: 37}));//triggers keydown programmatically
+		flash($(this));//flashes clicked button
 	});
 	$("#arrowR").mousedown(function() {
-		if(!figure.checkCollisions(1, 0) && field.figureIsBeingLowered)
-			figure.move(1, 0);
+		$(document).trigger(jQuery.Event('keydown', {keyCode: 39, which: 39}));
+		flash($(this));
 	});
 	$("#arrowD").mousedown(function() {
-		if(field.figureIsBeingLowered)
-			figure.lower();
+		$(document).trigger(jQuery.Event('keydown', {keyCode: 40, which: 40}));
+		flash($(this));
 	});
 	$("#rotate").mousedown(function() {
-		if(field.figureIsBeingLowered)
-			figure.rotate();
+		$(document).trigger(jQuery.Event('keydown', {keyCode: 32, which: 32}));
+		flash($(this));
 	});
 	$("#pause").mousedown(function() {
-		field.figureLowering(!field.figureIsBeingLowered);
+		$(document).trigger(jQuery.Event('keydown', {keyCode: 80, which: 80}));
 	});
 });
 
-$(document).keydown(function(e) {
-	switch(e.keyCode) {
-		case 37://left
-			if(!figure.checkCollisions(-1, 0) && field.figureIsBeingLowered)
-				figure.move(-1, 0);
-			break;
-		case 39://right
-			if(!figure.checkCollisions(1, 0) && field.figureIsBeingLowered)
-				figure.move(1, 0);
-			break;
-		case 40://down
-			if(field.figureIsBeingLowered)
-				figure.lower();
-			break;
-		case 32://space
-			if(field.figureIsBeingLowered)
-				figure.rotate();
-			break;
-		case 80://p
+function startGame() {
+	$('#startGameScreen').fadeOut(200);
+	$('main').fadeIn(600);
+	
+	points = 0;
+	prevColor = Math.floor((Math.random() * 5) + 1);
+	field = new Field(11, 20);
+	figure = new Figure(Math.floor((Math.random() * 7) + 1), prevColor);
+	newFigure = Math.floor((Math.random() * 7) + 1);
+	do{
+		newColor = Math.floor((Math.random() * 5) + 1);
+	}while(newColor == prevColor);
+	nextFigure = new NextFigure(newFigure, newColor);
+	
+	field.figureLowering(true);
+	
+	$(document).keydown(function(e) {
+		if(e.keyCode == 80) {//p
 			field.figureLowering(!field.figureIsBeingLowered);
-			break;
-	}
-});
+		} else if(field.figureIsBeingLowered) {
+			switch(e.keyCode) {
+				case 37://left
+					if(!figure.checkCollisions(-1, 0))
+						figure.move(-1, 0);
+					break;
+				case 39://right
+					if(!figure.checkCollisions(1, 0))
+						figure.move(1, 0);
+					break;
+				case 40://down
+					figure.lower();
+					break;
+				case 32://space
+					figure.rotate();
+					break;
+			}
+		}
+	});
+}
+
+function flash(button) {
+	button.addClass("clicked");
+	setTimeout(function() {
+		button.removeClass("clicked");
+	}, 100);
+}
 
 var Field = function(width, height) {
 	this.width = width;
 	this.height = height;
+	this.margin = 20;
 	this.bricksLeft = [];
 	this.figureIsBeingLowered = false;
 
 	this.field = $(".field");
 	$(this.field).css('width', 30*width).css('height', 30*height);
-	
-	$("main").css('width', 30*width).css('height', 30*height + 100);
-	$(".button").css('width', 30*width/5).css('height', 30*width/5);
+	//							.nextFigure width, distance between,  			buttons height	
+	$("main").css('width', 30*width + 30*(width-7) + 20).css('height', 30*height + 30*width/5);
+	$(".nextFigure").css('width', 30*(width-7)).css('height', 30*(height-17));//4x3 field
+	$(".button").css('width', 30*width/5).css('height', 30*width/5);//5 buttons width = field width
 };
 
 Field.prototype.removeFullRows = function() {
@@ -85,6 +109,9 @@ Field.prototype.removeFullRows = function() {
 			this.bricksLeft = $.grep(this.bricksLeft, function(value){//removes bricks from array with bricks left
 				return $.inArray(value, toRemove) < 0;
 			});
+			
+			points++;
+			$("h3").text(points);
 		}
 	}
 };
@@ -95,23 +122,30 @@ Field.prototype.figureLowering = function(flag) {
 			figure.lower();
 		}, 500);
 		this.figureIsBeingLowered = true;
+		$(".button").removeClass("inactive");
+		$("#pause").removeClass("clicked");
 	} else {
 		clearInterval(figureLoweringIntervalId);
 		this.figureIsBeingLowered = false;
+		$(".button").addClass("inactive");
+		$("#pause").removeClass("inactive");
+		$("#pause").addClass("clicked");
 	}
 };
 
 Field.prototype.finishGame = function() {
 	clearInterval(figureLoweringIntervalId);
-	alert("Game over! "+points+" points.");
+	$(document).unbind("keydown");
+	$('main').fadeOut(400);
+	$('#endGameScreen').fadeIn(1000);
 };
 
-var Figure = function(type) {
+var Figure = function(type, color) {
 	this.type = type;
+	this.color = color;
 	var figure = document.createElement('div');
 	this.figure = figure;
 	$(this.figure).addClass("figure").appendTo($(field.field));
-	
 	this.state = 1;
 	if(this.type == 1 || this.type == 4 || this.type == 5)
 		this.statesAmount = 4;
@@ -119,12 +153,7 @@ var Figure = function(type) {
 		this.statesAmount = 1;
 	else if(this.type == 3 || this.type == 6 || this.type == 7)
 		this.statesAmount = 2;
-	
-	do{
-		this.color = Math.floor((Math.random() * 5) + 1);
-	}while(this.color == prevColor);
-	prevColor = this.color;
-	
+
 	this.bricks = [];
 	if(type==1) {//platform
 		this.bricks[0] = new Brick(this, 4, 0);
@@ -184,7 +213,17 @@ Figure.prototype.lower = function() {
 		
 		field.removeFullRows();
 		
-		figure = new Figure(Math.floor((Math.random() * 7) + 1));
+		figure = new Figure(newFigure, newColor);
+		
+		prevColor = newColor;
+		
+		newFigure = Math.floor((Math.random() * 7) + 1);
+		do{
+			newColor = Math.floor((Math.random() * 5) + 1);
+		}while(newColor == prevColor);
+		
+		nextFigure.removeFigure();
+		nextFigure = new NextFigure(newFigure, newColor);
 	}
 };
 
@@ -373,4 +412,56 @@ Brick.prototype.move = function(x, y) {
 	this.x += x;
 	this.y += y;
 	$(this.brick).css('left', 30*this.x).css('top', 30*this.y);
+};
+
+var NextFigure = function(type, color) {
+	this.type = type;
+	this.color = color;
+	var figure = document.createElement('div');
+	this.figure = figure;
+	$(this.figure).addClass("figure").appendTo($(".nextFigure"));
+
+	this.bricks = [];
+	if(type==1) {//platform
+		this.bricks[0] = new Brick(this, 0, 1);
+		this.bricks[1] = new Brick(this, 1, 1);
+		this.bricks[2] = new Brick(this, 2, 1);
+		this.bricks[3] = new Brick(this, 1, 2);
+	} else if(type==2) {//square
+		this.bricks[0] = new Brick(this, 1, 1);
+		this.bricks[1] = new Brick(this, 2, 1);
+		this.bricks[2] = new Brick(this, 1, 2);
+		this.bricks[3] = new Brick(this, 2, 2);
+	} else if(type==3) {//line
+		this.bricks[0] = new Brick(this, 0, 2);
+		this.bricks[1] = new Brick(this, 1, 2);
+		this.bricks[2] = new Brick(this, 2, 2);
+		this.bricks[3] = new Brick(this, 3, 2);
+	} else if(type==4) {//L normal
+		this.bricks[0] = new Brick(this, 0, 1);
+		this.bricks[1] = new Brick(this, 1, 1);
+		this.bricks[2] = new Brick(this, 2, 1);
+		this.bricks[3] = new Brick(this, 0, 2);
+	} else if(type==5) {//L turned
+		this.bricks[0] = new Brick(this, 0, 1);
+		this.bricks[1] = new Brick(this, 1, 1);
+		this.bricks[2] = new Brick(this, 2, 1);
+		this.bricks[3] = new Brick(this, 2, 2);
+	} else if(type==6) {//stairs S normal
+		this.bricks[0] = new Brick(this, 2, 0);
+		this.bricks[1] = new Brick(this, 1, 1);
+		this.bricks[2] = new Brick(this, 2, 1);
+		this.bricks[3] = new Brick(this, 1, 2);
+	} else if(type==7) {//stairs S turned
+		this.bricks[0] = new Brick(this, 1, 0);
+		this.bricks[1] = new Brick(this, 1, 1);
+		this.bricks[2] = new Brick(this, 2, 1);
+		this.bricks[3] = new Brick(this, 2, 2);
+	}
+};
+
+NextFigure.prototype.removeFigure = function() {
+	$.each(this.bricks, function(){//for each brick in a figure
+		this.brick.remove();//removing "brick" div
+	});
 };

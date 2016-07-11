@@ -7,17 +7,39 @@
 	<script src="script.js"></script>
 </head>
 <body>
-	<header></header>
+	<div id="startGameScreen" class="overlay">
+		<h1>TETRIS</h1>
+		<h2><img src="images/keyArrowL.png" alt="arrow left" height="50" width="50"> - move left</h2>
+		<h2><img src="images/keyArrowR.png" alt="arrow right" height="50" width="50"> - move right</h2>
+		<h2><img src="images/keyArrowD.png" alt="arrow down" height="50" width="50"> - move down</h2>
+		<h2><img src="images/keySpace.png" alt="key space" height="50" width="137"> - rotate</h2>
+		<h2><img src="images/keyP.png" alt="key p" height="50" width="50"> - pause</h2>
+		<div id="start"></div>
+	</div>
+
 	<main>
-		<div class="field"></div> 
-		<div class="buttons">
+		<section class="field"></section>
+		<aside>
+			<h2>Points:</h2>
+			<h3>0</h3>
+			<h4>Next figure:</h4>
+			<section class="nextFigure"></section>
+		</aside>
+		<section class="buttons">
 			<div class="button" id="arrowL"></div>
 			<div class="button" id="arrowR"></div>
 			<div class="button" id="arrowD"></div>
 			<div class="button" id="rotate"></div>
 			<div class="button" id="pause"></div>
-		</div>
+		</section>
+		<a id="info" class="tooltips" href="#"><span>Created by Kamil Podlasek</span></a>
 	</main>
-	<footer></footer>
+	
+	<div id="endGameScreen" class="overlay">
+		<h1>YOU LOSE</h1>
+		<h2>Points:</h2>
+		<h3>0</h3>
+		<footer>&#169 Copyright 2016 <a href="mailto:kamil.podlasek@gmail.com">Kamil Podlasek</a></footer>
+	</div>
 </body>
 </html>
